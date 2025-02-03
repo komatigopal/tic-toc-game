@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Player {
     private String playerName;
-    private String players;
+    private String playerCoin;
     private List<PlayerMove> playerMoves;
 
     public String getPlayerName() {
@@ -17,12 +17,12 @@ public class Player {
         this.playerName = playerName;
     }
 
-    public String getPlayers() {
-        return players;
+    public String getPlayerCoin() {
+        return playerCoin;
     }
 
-    public void setPlayers(String players) {
-        this.players = players;
+    public void setPlayerCoin(String playerCoin) {
+        this.playerCoin = playerCoin;
     }
 
     public List<PlayerMove> getPlayerMoves() {
@@ -37,9 +37,9 @@ public class Player {
         this.playerMoves = playerMoves;
     }
 
-    public Player(String playerName, String players) {
+    public Player(String playerName, String playerCoin) {
         this.playerName = playerName;
-        this.players = players;
+        this.playerCoin = playerCoin;
         this.playerMoves = new ArrayList<PlayerMove>();
     }
 
@@ -47,7 +47,7 @@ public class Player {
     public String toString() {
         return "Player{" +
                 "playerName='" + playerName + '\'' +
-                ", players='" + players + '\'' +
+                ", playerCoin='" + playerCoin + '\'' +
                 ", playerMoves=" + playerMoves +
                 '}';
     }

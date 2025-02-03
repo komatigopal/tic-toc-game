@@ -1,10 +1,11 @@
 package com.gopal;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class TicTocApplication {
     private static final String[][] board = new String[3][3];
-    private static final String player1S = "X", player2S = "O";
+    private static final String player1Coin = "X", player2Coin = "O";
     private static final int min = 0, max = 2;
     private static final String initialCharForBoard = " ";
 
@@ -12,11 +13,11 @@ public class TicTocApplication {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the 1st player name - ");
         String player1Name = sc.nextLine();
-        Player player1 = new Player(player1Name, player1S);
+        Player player1 = new Player(player1Name, player1Coin);
         System.out.println("Enter the 2nd player name - ");
 
         String player2Name = sc.nextLine();
-        Player player2 = new Player(player2Name, player2S);
+        Player player2 = new Player(player2Name, player2Coin);
 
         createBoard();
 
@@ -29,11 +30,11 @@ public class TicTocApplication {
             if (checkRowColNumValid(rowNum) && checkRowColNumValid(colNum) && board[rowNum][colNum].equals(initialCharForBoard)) {
                 PlayerMove playerMove = new PlayerMove(rowNum, colNum);
                 if (player1Turn) {
-                    board[rowNum][colNum] = player1S;
+                    board[rowNum][colNum] = player1Coin;
                     player1.getPlayerMoves().add(playerMove);
                     player1Turn = false;
                 } else {
-                    board[rowNum][colNum] = player2S;
+                    board[rowNum][colNum] = player2Coin;
                     player2.getPlayerMoves().add(playerMove);
                     player1Turn = true;
                 }
@@ -56,45 +57,64 @@ public class TicTocApplication {
     }
 
     private static boolean checkWon(Player player) {
-        List<PlayerMove> playerMoves = player.getPlayerMoves();
-        System.out.println(player.getPlayerName() + " playerMoves - " + playerMoves);
-        Set<PlayerMove> completedMoves = new HashSet<>();
-        String[] directions = "row col rightDown rightUp".split(" ");
-        for (String direction : directions) {
-            for (PlayerMove currentMove : playerMoves) {
-                completedMoves = new HashSet<>();
-                if (playerMoves.size() >= 3 && recursiveCheckWon(playerMoves, currentMove, completedMoves, direction)) {
+        String playerCoin = player.getPlayerCoin();
+        int count = 0;
+        //checking row wise
+        for (String[] strings : board) {
+            count = 0;
+            for (int colIndex = 0; colIndex < board.length; colIndex++) {
+                String currentCoin = strings[colIndex];
+                if (currentCoin != null && currentCoin.equals(playerCoin)) {
+                    count++;
+                }
+                if (count == board.length) {
                     System.out.println(player.getPlayerName() + " Won the game");
                     return true;
                 }
             }
         }
-        return false;
-    }
 
-    private static boolean recursiveCheckWon(List<PlayerMove> playerMoves, PlayerMove currentMove, Set<PlayerMove> completedMoves, String direction) {
-        int rowNum = currentMove.getRowNum();
-        int colNum = currentMove.getColNum();
-        for (PlayerMove playerMove : playerMoves) {
-            if (direction.equals("row") && !completedMoves.contains(playerMove) && playerMove.getRowNum() == rowNum && (playerMove.getColNum() == colNum + 1 || playerMove.getColNum() == colNum - 1)) {
-                completedMoves.add(playerMove);
-                completedMoves.add(currentMove);
-                return recursiveCheckWon(playerMoves, playerMove, completedMoves, direction);
-            } else if (direction.equals("col") && !completedMoves.contains(playerMove) && (playerMove.getRowNum() == rowNum + 1 || playerMove.getRowNum() == rowNum - 1) && playerMove.getColNum() == colNum) {
-                completedMoves.add(playerMove);
-                completedMoves.add(currentMove);
-                return recursiveCheckWon(playerMoves, playerMove, completedMoves, direction);
-            } else if (direction.equals("rightDown") && !completedMoves.contains(playerMove) && playerMove.getRowNum() == rowNum + 1 && playerMove.getColNum() == colNum + 1) {
-                completedMoves.add(playerMove);
-                completedMoves.add(currentMove);
-                return recursiveCheckWon(playerMoves, playerMove, completedMoves, direction);
-            } else if (direction.equals("rightUp") && !completedMoves.contains(playerMove) && playerMove.getRowNum() == rowNum - 1 && playerMove.getColNum() == colNum + 1) {
-                completedMoves.add(playerMove);
-                completedMoves.add(currentMove);
-                return recursiveCheckWon(playerMoves, playerMove, completedMoves, direction);
+        //checking col wise
+        for (int colIndex = 0; colIndex < board.length; colIndex++) {
+            count = 0;
+            for (int rowIndex = 0; rowIndex < board.length; rowIndex++) {
+                String currentCoin = board[rowIndex][colIndex];
+                if (currentCoin != null && currentCoin.equals(playerCoin)) {
+                    count++;
+                }
+                if (count == board.length) {
+                    System.out.println(player.getPlayerName() + " Won the game");
+                    return true;
+                }
             }
         }
-        return completedMoves.size() == board.length;
+
+        //checking \ wise
+        count = 0;
+        for (int index = 0; index < board.length; index++) {
+            String currentCoin = board[index][index];
+            if (currentCoin != null && currentCoin.equals(playerCoin)) {
+                count++;
+            }
+            if (count == board.length) {
+                System.out.println(player.getPlayerName() + " Won the game");
+                return true;
+            }
+        }
+
+        //checking / wise
+        count = 0;
+        for (int index = 0; index < board.length; index++) {
+            String currentCoin = board[index][board.length - 1 - index];
+            if (currentCoin != null && currentCoin.equals(playerCoin)) {
+                count++;
+            }
+            if (count == board.length) {
+                System.out.println(player.getPlayerName() + " Won the game");
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean checkAnyCellNull() {
